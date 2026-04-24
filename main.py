@@ -4,8 +4,8 @@ import smtplib
 import os
 
 to_replace = "[Name]"
-my_mail = os.environ.get("MY_MAIL")
-password = os.environ.get("PASSWORD")
+my_mail = os.environ.get("MY_EMAIL")
+password = os.environ.get("MY_PASSWORD")
 
 #Date
 now = dt.datetime.now()
