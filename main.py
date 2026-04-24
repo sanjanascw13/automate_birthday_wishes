@@ -6,9 +6,8 @@
 # See the solution video in the 100 Days of Python Course for explainations.
 
 
-from datetime import datetime
+import datetime as dt
 import pandas
-import random
 import smtplib
 import os
 
@@ -16,23 +15,54 @@ import os
 MY_EMAIL = os.environ.get("MY_EMAIL")
 MY_PASSWORD = os.environ.get("MY_PASSWORD")
 
-today = datetime.now()
-today_tuple = (today.month, today.day)
+to_replace = "[Name]"
+my_mail = "sanjanascw13@gmail.com"
+password = "rsoaleceiudchfpp"
 
-data = pandas.read_csv("birthdays.csv")
-birthdays_dict = {(data_row["month"], data_row["day"])                  : data_row for (index, data_row) in data.iterrows()}
-if today_tuple in birthdays_dict:
-    birthday_person = birthdays_dict[today_tuple]
-    file_path = f"letter_templates/letter_{random.randint(1, 3)}.txt"
-    with open(file_path) as letter_file:
-        contents = letter_file.read()
-        contents = contents.replace("[NAME]", birthday_person["name"])
+#Date
+now = dt.datetime.now()
+day = now.day
+month = now.month
 
-    with smtplib.SMTP("YOUR EMAIL PROVIDER SMTP SERVER ADDRESS") as connection:
-        connection.starttls()
-        connection.login(MY_EMAIL, MY_PASSWORD)
-        connection.sendmail(
-            from_addr=MY_EMAIL,
-            to_addrs=birthday_person["email"],
-            msg=f"Subject:Happy Birthday!\n\n{contents}"
-        )
+#Email
+connection = smtplib.SMTP(host="smtp.gmail.com", port=587)
+connection.starttls()
+connection.login(user=my_mail, password=password)
+
+#Functions
+def checker(dictionary_name):
+    birthday_list = []
+    for i in dictionary_name:
+        check_month = i.get("month")
+        check_day = i.get("day")
+        if check_month == month and check_day == day:
+            birthday_list.append(i)
+    return birthday_list
+
+
+def mail_send(list_name):
+    for j in list_name:
+        birthday_name = j.get("name")
+        birthday_mail = j.get("email")
+
+        with open(file="letter.txt", mode="r", encoding="utf-8") as letter:
+            lines = letter.readlines()
+            new_line = lines[0].replace(to_replace, birthday_name)
+            lines[0] = new_line
+
+        body = ""
+
+        for k in lines:
+            body = body + k
+
+        message = f"Subject : Happy Birthday {birthday_name}\n\n{body}"
+        connection.sendmail(from_addr=my_mail, to_addrs=birthday_mail, msg=message)
+
+
+#CSV file
+birthdays_data = pandas.read_csv("birthdays.csv")
+birth_dict = birthdays_data.to_dict(orient = "records")
+
+birthday_boy = checker(birth_dict)
+mail_send(birthday_boy)
+connection.close()
