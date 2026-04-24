@@ -16,8 +16,8 @@ MY_EMAIL = os.environ.get("MY_EMAIL")
 MY_PASSWORD = os.environ.get("MY_PASSWORD")
 
 to_replace = "[Name]"
-my_mail = "sanjanascw13@gmail.com"
-password = "rsoaleceiudchfpp"
+my_mail = os.environ.get("MY_MAIL")
+password = os.environ.get("PASSWORD")
 
 #Date
 now = dt.datetime.now()
